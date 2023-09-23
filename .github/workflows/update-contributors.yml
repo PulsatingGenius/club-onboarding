@@ -1,0 +1,24 @@
+name: Update Contributor Badges
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Schedule to run daily, adjust as needed
+
+jobs:
+  update-contributors:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Fetch Contributor Badges
+        run: |
+          # Fetch contributor badges from Contrib.rocks
+          wget -O contributor-badges.svg "https://contrib.rocks/image?repo=SST-OSS/club-onboarding"
+          
+          # Replace the existing contributor badge in your README
+          sed -i '/<!-- CONTRIBUTORS -->/ {N; s/<img[^>]*>/'"$(cat contributor-badges.svg | base64 -w 0)"'/}' README.md
+        env:
+           MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+
